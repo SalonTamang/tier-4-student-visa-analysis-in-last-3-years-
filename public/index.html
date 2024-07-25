@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tier 4 Student Visa Analysis</title>
+  <!-- Vue.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Tailwind css -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+  <div id="app" class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4 flex items-center">Tier 4 Student Visa Analysis
+        <img width="48" height="48" src="https://img.icons8.com/color/96/great-britain-circular.png" alt="great-britain-circular" class="mb-4"/>
+    </h1>
+    
+    <div class="bg-white p-4 rounded shadow">
+      <canvas id="visaChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        visaData: []
+      },
+      mounted() {
+        axios.get('/visa-data')
+          .then(response => {
+            this.visaData = response.data;
+            this.renderChart();
+          });
+      },
+      methods: {
+        renderChart() {
+          const ctx = document.getElementById('visaChart').getContext('2d');
+          const data = {
+            labels: this.visaData.map(item => item.year),
+            datasets: [
+              {
+                label: 'Applications',
+                data: this.visaData.map(item => item.applications),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+              },
+              {
+                label: 'Approvals',
+                data: this.visaData.map(item => item.approvals),
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+              }
+            ]
+          };
+          new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>
